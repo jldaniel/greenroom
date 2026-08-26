@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "extends": "../../tsconfig.bun.json",
+  "compilerOptions": {
+    "outDir": "dist",
+    "rootDir": "src",
+    "tsBuildInfoFile": "tsconfig.tsbuildinfo"
+  },
+  "include": ["src/**/*.ts"],
+  "references": [
+    { "path": "../../packages/schemas" },
+    { "path": "../../packages/core" },
+    { "path": "../../packages/git" },
+    { "path": "../../packages/mcp" },
+    { "path": "../../packages/supervisor" }
+  ]
+}

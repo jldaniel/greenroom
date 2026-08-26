@@ -1,0 +1,13 @@
+.git
+.greenroom-data
+.env
+**/node_modules
+**/dist
+coverage
+playwright-report
+test-results
+*.sqlite
+*.sqlite-*
+**/*.tsbuildinfo
+context
+.claude

@@ -1,0 +1,19 @@
+{
+  "name": "@greenroom/mcp",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./*": "./src/*.ts"
+  },
+  "scripts": {
+    "http": "bun src/http.ts",
+    "stdio": "bun src/stdio.ts"
+  },
+  "dependencies": {
+    "@greenroom/core": "workspace:*",
+    "@greenroom/schemas": "workspace:*",
+    "zod": "^4.4.3"
+  }
+}

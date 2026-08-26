@@ -1,0 +1,7 @@
+{
+  "resource": "greenroom://setup/smoke",
+  "kind": "setup_smoke",
+  "marker": "greenroom-harness-smoke-v1",
+  "secret": false,
+  "expectedResponseKind": "setup_smoke_report"
+}

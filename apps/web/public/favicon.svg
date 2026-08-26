@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" role="img" aria-labelledby="title">
+  <title id="title">Greenroom</title>
+  <rect width="256" height="256" rx="48" fill="#f7f8f5" />
+  <path
+    d="M200 82a84 84 0 1 0-112 118"
+    fill="none"
+    stroke="#185c3b"
+    stroke-linecap="butt"
+    stroke-width="42"
+  />
+  <path d="M140 128h66v72h-42v-31h-24z" fill="#185c3b" />
+  <path d="M88 201l42-25 49 25z" fill="#8ee6b1" />
+  <path d="M86 98l46 17v61l-46 25z" fill="#17231f" />
+  <path
+    d="M109 137l-14 14 14 14M116 137l14 14-14 14"
+    fill="none"
+    stroke="#8ee6b1"
+    stroke-linecap="square"
+    stroke-linejoin="miter"
+    stroke-width="8"
+  />
+</svg>

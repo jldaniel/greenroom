@@ -1,0 +1,9 @@
+{
+  "name": "greenroom",
+  "version": "1.0.0",
+  "displayName": "Greenroom Review Harness",
+  "description": "Instructions for Greenroom-owned review, Spotlight, Teaching, and setup smoke workflows.",
+  "minGreenroomVersion": "0.0.0",
+  "expectedMcpResource": "greenroom://setup/smoke",
+  "credentialPolicy": "Do not store or request provider keys, bearer tokens, or user credentials."
+}

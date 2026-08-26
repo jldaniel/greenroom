@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "compilerOptions": {
+    "target": "ES2023",
+    "lib": ["ES2023"],
+    "module": "ESNext",
+    "moduleDetection": "force",
+    "moduleResolution": "Bundler",
+    "baseUrl": ".",
+    "ignoreDeprecations": "6.0",
+    "paths": {
+      "@greenroom/core": ["packages/core/src/index.ts"],
+      "@greenroom/core/*": ["packages/core/src/*.ts"],
+      "@greenroom/git": ["packages/git/src/index.ts"],
+      "@greenroom/git/*": ["packages/git/src/*.ts"],
+      "@greenroom/harness": ["packages/harness/src/index.ts"],
+      "@greenroom/harness/*": ["packages/harness/src/*.ts"],
+      "@greenroom/mcp": ["packages/mcp/src/index.ts"],
+      "@greenroom/mcp/*": ["packages/mcp/src/*.ts"],
+      "@greenroom/schemas": ["packages/schemas/src/index.ts"],
+      "@greenroom/schemas/*": ["packages/schemas/src/*.ts"],
+      "@greenroom/server": ["apps/server/src/index.ts"],
+      "@greenroom/server/*": ["apps/server/src/*.ts"]
+    },
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "isolatedModules": true,
+    "noEmitOnError": true,
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitOverride": true,
+    "noUncheckedIndexedAccess": true,
+    "noUncheckedSideEffectImports": true,
+    "exactOptionalPropertyTypes": true,
+    "resolveJsonModule": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "useDefineForClassFields": true,
+    "verbatimModuleSyntax": true
+  }
+}

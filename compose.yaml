@@ -1,0 +1,58 @@
+# Default production compose: one container serving the API, the static web
+# app, and the MCP HTTP endpoint. Development (Vite dev server, split
+# services) lives in compose.dev.yaml.
+name: greenroom
+
+services:
+  greenroom:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: greenroom:local
+    restart: unless-stopped
+    environment:
+      # Pass-through entries stay unset in the container when unset on the
+      # host, so values from the mounted /data/greenroom.toml config file
+      # still apply (precedence per key: env var > config file > default).
+      - GREENROOM_SETUP_TOKEN_ENDPOINT=${GREENROOM_SETUP_TOKEN_ENDPOINT:-enabled}
+      - GREENROOM_LOG_LEVEL=${GREENROOM_LOG_LEVEL:-info}
+      - GREENROOM_BOOTSTRAP_ADMIN_TOKEN
+      - GREENROOM_HARNESS_BASE_URL
+      - GREENROOM_HARNESS_TOKEN
+      - GREENROOM_HARNESS_TIMEOUT_MS
+      - GREENROOM_DEFAULT_AI_BACKEND
+      - GREENROOM_API_TOKEN
+    ports:
+      # Published on loopback only by default. Before setting
+      # GREENROOM_PUBLISH_HOST to a non-loopback interface, set
+      # GREENROOM_SETUP_TOKEN_ENDPOINT=disabled and pre-provision
+      # GREENROOM_BOOTSTRAP_ADMIN_TOKEN; see docs/Docker.md.
+      - "${GREENROOM_PUBLISH_HOST:-127.0.0.1}:${GREENROOM_API_HOST_PORT:-49331}:49331"
+      - "${GREENROOM_PUBLISH_HOST:-127.0.0.1}:${GREENROOM_MCP_HOST_PORT:-49332}:49332"
+    volumes:
+      # Data dir: SQLite database plus the greenroom.toml config file (an
+      # annotated template is written on first start).
+      - ${GREENROOM_DATA_VOLUME:-greenroom-data}:/data
+      # Code root: every Git repository under this host path is reachable at
+      # /worktrees/<name> inside the container, so new projects created under
+      # the root need no restart. Mounted read-only — reviewed repositories
+      # are inputs Greenroom never mutates.
+      - ${GREENROOM_WORKTREE_VOLUME:-.}:/worktrees:ro
+    extra_hosts:
+      # Reach a host-side harness bridge as host.docker.internal on Linux too.
+      - "host.docker.internal:host-gateway"
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "bun",
+          "-e",
+          "const response = await fetch('http://127.0.0.1:49331/health'); process.exit(response.ok ? 0 : 1);",
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 5s
+
+volumes:
+  greenroom-data:

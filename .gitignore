@@ -1,0 +1,28 @@
+# OS
+.DS_Store
+
+# Dependencies
+node_modules/
+
+# Environment
+.env
+.env.*
+!.env.compose.example
+
+# Claude Code
+.claude/
+
+# Runtime data
+.greenroom-data/
+*.sqlite
+*.sqlite-*
+context/
+
+# Build output
+dist/
+*.tsbuildinfo
+
+# Test output
+coverage/
+playwright-report/
+test-results/

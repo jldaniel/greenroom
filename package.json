@@ -1,0 +1,77 @@
+{
+  "name": "greenroom",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Local-first review PR system for AI-assisted code changes.",
+  "license": "MIT",
+  "author": "Jason Daniel",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jldaniel/greenroom.git"
+  },
+  "homepage": "https://github.com/jldaniel/greenroom#readme",
+  "bugs": {
+    "url": "https://github.com/jldaniel/greenroom/issues"
+  },
+  "type": "module",
+  "packageManager": "bun@1.3.14",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "format": "prettier --write \"**/*.{js,cjs,mjs,ts,tsx,json,yml,yaml,css,html}\"",
+    "format:check": "prettier --check \"**/*.{js,cjs,mjs,ts,tsx,json,yml,yaml,css,html}\"",
+    "lint": "eslint . --ext .js,.cjs,.mjs,.ts,.tsx",
+    "lint:fix": "eslint . --ext .js,.cjs,.mjs,.ts,.tsx --fix",
+    "compose:dev:down": "docker compose -f compose.dev.yaml down",
+    "compose:dev:fresh": "docker compose -f compose.dev.yaml down --volumes --remove-orphans && docker compose -f compose.dev.yaml up --build",
+    "compose:dev:up": "docker compose -f compose.dev.yaml up --build",
+    "compose:down": "docker compose down",
+    "compose:fresh": "docker compose down --volumes --remove-orphans && docker compose up --build",
+    "compose:up": "docker compose up --build",
+    "docs:mcp": "\"${BUN_INSTALL:-$HOME/.bun}/bin/bun\" --cwd packages/mcp src/docs.ts",
+    "greenroom": "\"${BUN_INSTALL:-$HOME/.bun}/bin/bun\" --cwd packages/cli src/index.ts",
+    "harness:claude": "GREENROOM_HARNESS_KIND=claude-code \"${BUN_INSTALL:-$HOME/.bun}/bin/bun\" --cwd packages/harness src/http.ts",
+    "harness:dev": "\"${BUN_INSTALL:-$HOME/.bun}/bin/bun\" --cwd packages/harness src/http.ts",
+    "server:dev": "\"${BUN_INSTALL:-$HOME/.bun}/bin/bun\" --cwd apps/server src/cli.ts",
+    "web:build": "\"${BUN_INSTALL:-$HOME/.bun}/bin/bun\" run --cwd apps/web build",
+    "web:dev": "\"${BUN_INSTALL:-$HOME/.bun}/bin/bun\" run --cwd apps/web dev --host 127.0.0.1",
+    "test": "\"${BUN_INSTALL:-$HOME/.bun}/bin/bun\" run test:unit",
+    "test:cli": "\"${BUN_INSTALL:-$HOME/.bun}/bin/bun\" x --bun vitest run --config vitest.cli.config.ts",
+    "test:coverage": "\"${BUN_INSTALL:-$HOME/.bun}/bin/bun\" run test:unit:coverage",
+    "test:ui": "\"${BUN_INSTALL:-$HOME/.bun}/bin/bun\" x playwright test",
+    "test:ui:live": "BUN_BIN=\"${BUN_INSTALL:-$HOME/.bun}/bin/bun\"; \"$BUN_BIN\" run web:build && \"$BUN_BIN\" x playwright test --config playwright.live.config.ts",
+    "test:unit": "\"${BUN_INSTALL:-$HOME/.bun}/bin/bun\" x --bun vitest run",
+    "test:unit:coverage": "\"${BUN_INSTALL:-$HOME/.bun}/bin/bun\" x --bun vitest run --coverage",
+    "test:unit:watch": "\"${BUN_INSTALL:-$HOME/.bun}/bin/bun\" x --bun vitest",
+    "typecheck": "tsc --build",
+    "typecheck:clean": "tsc --build --clean",
+    "verify": "BUN_BIN=\"${BUN_INSTALL:-$HOME/.bun}/bin/bun\"; \"$BUN_BIN\" run format:check && \"$BUN_BIN\" run lint && \"$BUN_BIN\" run typecheck && \"$BUN_BIN\" run test:unit && \"$BUN_BIN\" run test:ui",
+    "verify:coverage": "BUN_BIN=\"${BUN_INSTALL:-$HOME/.bun}/bin/bun\"; \"$BUN_BIN\" run verify && \"$BUN_BIN\" run test:unit:coverage"
+  },
+  "devDependencies": {
+    "@eslint/js": "10.0.1",
+    "@playwright/test": "^1.50.0",
+    "@types/bun": "^1.3.14",
+    "@vitest/coverage-istanbul": "4.1.9",
+    "eslint": "10.5.0",
+    "prettier": "3.8.4",
+    "typescript": "6.0.3",
+    "typescript-eslint": "8.62.0",
+    "vitest": "4.1.9"
+  },
+  "engines": {
+    "bun": ">=1.3.14"
+  },
+  "overrides": {
+    "brace-expansion": "5.0.9",
+    "nanoid": "3.3.18",
+    "postcss": "8.5.26"
+  },
+  "dependencies": {
+    "@greenroom/cli": "workspace:*",
+    "drizzle-orm": "^0.45.2",
+    "zod": "^4.4.3"
+  }
+}

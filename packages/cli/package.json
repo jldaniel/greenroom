@@ -1,0 +1,22 @@
+{
+  "name": "@greenroom/cli",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "bin": {
+    "greenroom": "./src/index.ts"
+  },
+  "exports": {
+    ".": "./src/index.ts",
+    "./*": "./src/*.ts"
+  },
+  "scripts": {
+    "start": "bun src/index.ts"
+  },
+  "dependencies": {
+    "@greenroom/harness": "workspace:*",
+    "@greenroom/schemas": "workspace:*",
+    "@greenroom/server": "workspace:*",
+    "@greenroom/supervisor": "workspace:*"
+  }
+}

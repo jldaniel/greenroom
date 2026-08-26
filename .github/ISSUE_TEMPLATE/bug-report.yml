@@ -1,0 +1,52 @@
+name: Bug report
+description: Report something that is broken or behaving unexpectedly.
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for the report! For suspected security vulnerabilities, please
+        use [private vulnerability reporting](https://github.com/jldaniel/greenroom/security/advisories/new)
+        instead of a public issue.
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: What did you do, what did you expect, and what happened instead?
+      placeholder: Steps to reproduce, expected behavior, actual behavior.
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      description: Which part of Greenroom is affected?
+      options:
+        - Web workspace (browser UI)
+        - CLI / supervisor (`greenroom up`, `status`, ...)
+        - API server / storage
+        - AI workflows (review, Spotlight, Teach)
+        - Harness bridge (Claude Code, Codex, Pi)
+        - MCP server
+        - Docker
+        - Documentation
+        - Other / not sure
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: OS, Bun version (`bun --version`), and how you run Greenroom (CLI or Docker).
+      placeholder: |
+        OS: macOS 15.5
+        Bun: 1.3.14
+        Running via: bun run greenroom -- up
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant output or logs
+      description: Terminal output, browser console errors, or `greenroom status` output. Please redact tokens and private paths.
+      render: text

@@ -1,0 +1,166 @@
+# Continuous integration. The four job names below (verify, cli-acceptance,
+# live-ui, container-build) are stable required-check names referenced by the
+# repository's branch protection; rename them only together with that
+# configuration.
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    name: verify
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Install Bun
+        uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
+        with:
+          bun-version: 1.3.14
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Audit dependencies
+        run: bun audit --audit-level=low
+
+      - name: Install Playwright browsers
+        run: bun x playwright install --with-deps chromium
+
+      # Same gate developers run locally: format:check, lint, typecheck,
+      # test:unit, then the mocked-API Playwright suite (test:ui).
+      - name: Run verify suite
+        run: bun run verify
+
+      - name: Upload Playwright traces
+        if: failure()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: playwright-ui-results
+          path: test-results/
+          retention-days: 7
+
+  cli-acceptance:
+    name: cli-acceptance
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Install Bun
+        uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
+        with:
+          bun-version: 1.3.14
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      # Spawns the real `greenroom up` process tree against a temp data dir
+      # with a shell-script mock harness (tests/cli.acceptance.test.ts).
+      - name: Run CLI acceptance suite
+        run: bun run test:cli
+
+  live-ui:
+    name: live-ui
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Install Bun
+        uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
+        with:
+          bun-version: 1.3.14
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Install Playwright browsers
+        run: bun x playwright install --with-deps chromium
+
+      # Builds apps/web/dist and runs tests/live against the real API server,
+      # harness bridge, and mock coding-agent CLI.
+      - name: Run live-API Playwright suite
+        run: bun run test:ui:live
+
+      - name: Upload Playwright traces
+        if: failure()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: playwright-live-results
+          path: test-results/
+          retention-days: 7
+
+  container-build:
+    name: container-build
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Build runtime image
+        run: docker build -t greenroom:ci .
+
+      # Loopback-only publish specs, with the checkout itself mounted as the
+      # read-only code root — the same shape as the shipped compose.yaml.
+      - name: Start container on loopback
+        run: |
+          docker run -d --name greenroom-ci \
+            -p 127.0.0.1:49331:49331 -p 127.0.0.1:49332:49332 \
+            -v "$PWD:/worktrees:ro" \
+            greenroom:ci
+
+      - name: Wait for API health
+        run: |
+          for _ in $(seq 1 60); do
+            if curl -fsS http://127.0.0.1:49331/health > /dev/null 2>&1; then
+              exit 0
+            fi
+            sleep 2
+          done
+          echo "API health endpoint never became ready" >&2
+          exit 1
+
+      - name: Smoke-test health, API, and MCP endpoints
+        run: |
+          echo "API health:" && curl -fsS http://127.0.0.1:49331/health && echo
+          echo "MCP health:" && curl -fsS http://127.0.0.1:49332/health && echo
+          token=$(curl -fsS -X POST http://127.0.0.1:49331/api/setup/tokens \
+            -H 'content-type: application/json' \
+            -d '{"name":"ci-smoke"}' | jq -re '.plaintextToken')
+          curl -fsS http://127.0.0.1:49331/api/repositories \
+            -H "authorization: Bearer $token" | jq -e '.repositories'
+          curl -fsS http://127.0.0.1:49332/mcp \
+            -H 'content-type: application/json' \
+            -d '{"jsonrpc":"2.0","id":1,"method":"tools/list"}' \
+            | jq -e '.result.tools | length > 0'
+
+      - name: Show container diagnostics
+        if: failure()
+        run: |
+          docker ps -a
+          docker logs greenroom-ci || true
