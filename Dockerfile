@@ -5,7 +5,7 @@
 # Vite production build of the web app. compose.dev.yaml targets this stage
 # (`target: build`) to run the Vite dev server and source-checkout services.
 # ---------------------------------------------------------------------------
-FROM oven/bun:1.3.14 AS build
+FROM oven/bun:1.4.0 AS build
 
 WORKDIR /workspace
 
@@ -40,7 +40,7 @@ RUN bun run --cwd apps/web build
 # web bundle. One container serves the API (which serves the static web app),
 # and the MCP HTTP endpoint via apps/server/src/container.ts.
 # ---------------------------------------------------------------------------
-FROM oven/bun:1.3.14-slim AS runtime
+FROM oven/bun:1.4.0-slim AS runtime
 
 WORKDIR /workspace
 
