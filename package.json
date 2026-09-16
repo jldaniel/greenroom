@@ -52,13 +52,13 @@
   },
   "devDependencies": {
     "@eslint/js": "10.0.1",
-    "@playwright/test": "^1.50.0",
-    "@types/bun": "^1.3.14",
+    "@playwright/test": "^1.63.0",
+    "@types/bun": "^1.4.2",
     "@vitest/coverage-istanbul": "4.1.9",
-    "eslint": "10.5.0",
-    "prettier": "3.8.4",
+    "eslint": "10.10.0",
+    "prettier": "3.9.6",
     "typescript": "6.0.3",
-    "typescript-eslint": "8.62.0",
+    "typescript-eslint": "8.70.0",
     "vitest": "4.1.9"
   },
   "engines": {
@@ -72,6 +72,6 @@
   "dependencies": {
     "@greenroom/cli": "workspace:*",
     "drizzle-orm": "^0.45.2",
-    "zod": "^4.4.3"
+    "zod": "^4.6.4"
   }
 }
